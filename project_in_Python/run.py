@@ -7,48 +7,6 @@ import utlis
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from sklearn.metrics.cluster import adjusted_rand_score
 
-X1 = torch.randn(100, 2)
-# print(X1)
-X2 = torch.randn(50, 2) + 5
-X3 = torch.randn(50, 2) + 10
-# print(X2)
-X = torch.cat((X1, X2, X3), dim = 0)
-# print(X)
-for i in range(30):
-    temp_x = torch.randn(200, 1)
-    X = torch.cat((X, temp_x), dim = 1)
-# print(X)
-
-p = X.shape[1]
-# print(p)
-
-std, mean = torch.std_mean(X, dim = 0, keepdim = False)
-# print(std, mean)
-X = (X - mean) / std
-fig = plt.figure("origin")
-# ax = Axes3D(fig)
-x = list(range(X.shape[0]))
-x = [i - X.shape[0] / 2 for i in x]
-y = list(range(X.shape[1]))
-y = [j - X.shape[1] / 2 for j in y]
-z = list(range(-1, 1 + 1))
-# print(x)
-# print(y)
-# print(z)
-# ax.set_zlabel('Z', fontdict={'size': 15, 'color': 'red'})
-# ax.set_ylabel('Y', fontdict={'size': 15, 'color': 'red'})
-# ax.set_xlabel('X', fontdict={'size': 15, 'color': 'red'})
-# print(X.shape)
-# for i in range(X.shape[0]):
-#     ax.scatter(i, y, X[i, y], c='r')
-# plt.show()
-plt.scatter(X[:, 0], X[:, 1])
-# plt.show()
-new_fig = plt.figure("process")
-# new_ax = Axes3D(new_fig)
-# new_ax.set_zlabel('Z', fontdict={'size': 15, 'color': 'red'})
-# new_ax.set_ylabel('Y', fontdict={'size': 15, 'color': 'red'})
-# new_ax.set_xlabel('X', fontdict={'size': 15, 'color': 'red'})
 name = '..\\data\\zoo.csv'
 feat, label = utlis.read_file(name)
 
