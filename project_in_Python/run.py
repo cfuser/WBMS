@@ -12,17 +12,18 @@ from datetime import datetime
 start_time = datetime.now()
 print('start time : ', start_time)
 
-name = '..\\data\\zoo.csv'
+name = '../data/GCM.csv'
 feat, label = utlis.read_file(name)
 
 feat = torch.tensor(feat, dtype = float)
+# print(label)
 label = torch.tensor(label, dtype = float)
 # scaler = MinMaxScaler()
 # feat = scaler.fit_transform(feat)
 # feat = torch.from_numpy(feat)
 feat_std, feat_mean = torch.std_mean(feat, dim = 0, keepdim = False)
 feat = (feat - feat_mean) / feat_std
-label = torch.squeeze(label, dim = 1)
+# label = torch.squeeze(label, dim = 1)
 print(feat, label)
 print(type(feat))
 # exit()
