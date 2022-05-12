@@ -9,10 +9,14 @@ from sklearn.metrics.cluster import adjusted_rand_score
 
 from datetime import datetime
 
+args = utlis.get_parse()
+print(args)
+
 start_time = datetime.now()
 print('start time : ', start_time)
 
-name = '../data/GCM.csv'
+name = '../data/' + args.dataset
+
 feat, label = utlis.read_file(name)
 
 feat = torch.tensor(feat, dtype = float)
@@ -28,7 +32,7 @@ print(feat, label)
 print(type(feat))
 # exit()
 # l = functions.WBMS(X, 0.1, _lambda = 10)
-l = functions.WBMS(feat, 0.1, _lambda = 20)
+l = functions.WBMS(feat, args.h, _lambda = args._lambda, tmax = args.tmax)
 print(l[0])
 print(l[1])
 # plt.scatter(X[:, 0], X[:, 1])
@@ -39,8 +43,8 @@ print(res_label)
 res_label_tensor = torch.zeros(label.shape)
 for i in res_label.keys():
     res_label_tensor[i] = res_label[i]
-res_label_tensor_paper = torch.tensor([1, 2, 1, 1, 3, 4, 5, 5, 3, 1, 2, 1, 1, 3, 4, 5, 5, 1, 1, 1, 1, 3, 4, 5, 5, 1, 1, 1, 1, 3, 4, 5, 5, 4, 6, 1, 1, 1, 1, 3, 4, 5, 5, 3, 1, 1, 1, 2, 3, 4, 5, 5, 4, 3, 1, 1, 1, 1, 3, 4, 5, 5, 4, 4, 1, 6, 6, 5, 6, 1, 1, 1, 1, 3, 4, 5, 5, 1, 1, 1, 1, 3, 4, 5, 5, 4, 4, 6, 6, 2, 1, 1, 1, 3, 4, 5, 5, 4, 4, 6, 6])
-res_label_tensor_paper = torch.tensor([1, 2, 1, 1, 3, 4, 5, 5, 3, 1, 2, 1, 1, 3, 6, 5, 5, 1, 1, 1, 1, 3, 4, 5, 5, 1, 1, 1, 1, 3, 6, 5, 5, 4, 7, 1, 1, 1, 1, 3, 6, 5, 5, 3, 1, 1, 1, 2, 3, 4, 5, 5, 4, 3, 1, 1, 1, 1, 3, 6, 5, 5, 4, 4, 1, 7, 7, 7, 7, 1, 1, 1, 1, 3, 6, 5, 5, 1, 1, 1, 1, 3, 6, 5, 5, 4, 4, 7, 7, 2, 1, 1, 1, 3, 6, 5, 5, 4, 4, 7, 7])
+# res_label_tensor_paper = torch.tensor([1, 2, 1, 1, 3, 4, 5, 5, 3, 1, 2, 1, 1, 3, 4, 5, 5, 1, 1, 1, 1, 3, 4, 5, 5, 1, 1, 1, 1, 3, 4, 5, 5, 4, 6, 1, 1, 1, 1, 3, 4, 5, 5, 3, 1, 1, 1, 2, 3, 4, 5, 5, 4, 3, 1, 1, 1, 1, 3, 4, 5, 5, 4, 4, 1, 6, 6, 5, 6, 1, 1, 1, 1, 3, 4, 5, 5, 1, 1, 1, 1, 3, 4, 5, 5, 4, 4, 6, 6, 2, 1, 1, 1, 3, 4, 5, 5, 4, 4, 6, 6])
+# res_label_tensor_paper = torch.tensor([1, 2, 1, 1, 3, 4, 5, 5, 3, 1, 2, 1, 1, 3, 6, 5, 5, 1, 1, 1, 1, 3, 4, 5, 5, 1, 1, 1, 1, 3, 6, 5, 5, 4, 7, 1, 1, 1, 1, 3, 6, 5, 5, 3, 1, 1, 1, 2, 3, 4, 5, 5, 4, 3, 1, 1, 1, 1, 3, 6, 5, 5, 4, 4, 1, 7, 7, 7, 7, 1, 1, 1, 1, 3, 6, 5, 5, 1, 1, 1, 1, 3, 6, 5, 5, 4, 4, 7, 7, 2, 1, 1, 1, 3, 6, 5, 5, 4, 4, 7, 7])
 nmi = normalized_mutual_info_score(res_label_tensor, label)
 print('NMI', nmi)
 ari = adjusted_rand_score(label, res_label_tensor)

@@ -28,3 +28,15 @@ def read_file(name):
     # print(res_label)
     # exit()
     return feat, res_label
+
+import argparse
+def get_parse():
+    # parser = argparse.ArgumentParser(description='CoLA: Self-Supervised Contrastive Learning for Anomaly Detection')
+    parser = argparse.ArgumentParser(description = 'Automated Clustering of High-dimensional Data with a Feature Weighted Mean Shift Algorithm')
+    parser.add_argument('--dataset', type = str, default='zoo.csv')  # "Cora", "Pubmed", "Citeseer"
+    parser.add_argument('--tmax', type = int, default = 30)
+    parser.add_argument('--_lambda', type = int, default = 20)
+    parser.add_argument('--h', type = float, default = 0.1)
+
+    args = parser.parse_args()
+    return args
