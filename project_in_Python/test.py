@@ -26,3 +26,20 @@ c2 = [1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2]
 
 ami = adjusted_mutual_info_score(c1, c2)
 print('[INFO]AMI: ', ami)
+
+from scipy.spatial import distance
+coords = torch.tensor([[0, 0, 0],
+          [0, 0, 1],
+          [0, 1, 0],
+          [0, 1, 1],
+          [2, 0, 0],
+          [1, 0, 1],
+          [1, 1, 0],
+          [1, 1, 1]])
+
+print(distance.cdist(coords, coords, 'euclidean'))
+
+a = torch.tensor([[1, 2], [11, 22], [111, 222]])
+w = torch.tensor([9, 8])
+# w = torch.unsqueeze(w, dim = 1)
+print(a * w)

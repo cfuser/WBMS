@@ -3,6 +3,7 @@ import matplotlib
 import math
 import torch
 import numpy as np
+from scipy.spatial import distance
 
 def K(x, y, w, h):
     # print(-torch.square(x - y) * w)
@@ -17,66 +18,158 @@ def WBMS(X, h, _lambda = 1, tmax = 30):
     p = X.shape[1]
     K_matrix = torch.zeros(n, n)
     w = torch.full([p], 1 / p)
+    # _ = [(i + 1) / p for i in range(p)]
+    # w = torch.tensor(_)
+    # w = torch.rand(p)
     # print(w)
     D = torch.zeros(p)
     X1 = X.clone()
     X2 = X.clone()
-    for t in range(20):
-        for i in range(n):
-            for j in range(i, n):
-                K_matrix[i, j] = K(X2[i, :], X2[j, :], w, h)
+    for t in range(tmax):
+        # for i in range(n):
+        #     for j in range(i, n):
+        #         K_matrix[i, j] = K(X2[i, :], X2[j, :], w, h)
+    
+        # for i in range(n):
+        #     for j in range(i, n):
+        #         K_matrix[j, i] = K_matrix[i, j]
 
-        for i in range(n):
-            for j in range(i, n):
-                K_matrix[j, i] = K_matrix[i, j]
+        # dist_Matrix = distance.cdist(X2, X2, 'euclidean')
+        # dist_Matrix = torch.from_numpy(dist_Matrix)
+        # print(dist_Matrix.shape)
+        # print(dist_Matrix)
+        # print(dist_Matrix * dist_Matrix)
+        
+        # dist_Matrix = dist_Matrix * dist_Matrix * 1 / p / h        
+        # dist_Matrix = torch.exp(-dist_Matrix)
+        # K_matrix = dist_Matrix.clone()
+
         # print(K_matrix)
+        # print(dist_Matrix)
+        # print(K_matrix == dist_Matrix)
+        # print(torch.sum(K_matrix == dist_Matrix))
         # exit()
 
-        for i in range(n):
-            I = list(range(0, n))
-            del I[i]
-            s = torch.sum(K_matrix[I, i])
-            for l in range(p):
-                X1[i, l] = torch.sum(X2[I, l] * K_matrix[I, i])
-            X1[i, :] = X1[i, :] / s
+        # for i in range(n):
+        #     I = list(range(0, n))
+        #     del I[i]
+        #     s = torch.sum(K_matrix[I, i])
+        #     for l in range(p):
+        #         X1[i, l] = torch.sum(X2[I, l] * K_matrix[I, i])
+        #     X1[i, :] = X1[i, :] / s
+        # print(X1)
+        # exit()
 
+        w_coeff = torch.sqrt(w)
+        X2_sqrt_w_coeff = X2 * w_coeff
+        dist_Matrix = distance.cdist(X2_sqrt_w_coeff, X2_sqrt_w_coeff, 'euclidean')
+        dist_Matrix = torch.from_numpy(dist_Matrix)
+
+        dist_Matrix = dist_Matrix * dist_Matrix / h
+        # dist_Matrix = dist_Matrix * dist_Matrix * 1 / p / h        
+        dist_Matrix = torch.exp(-dist_Matrix)
+        K_matrix = dist_Matrix.clone()
+
+        Identify_Matrix = 1 - torch.eye(K_matrix.shape[0])
+        # print(K_matrix * Identify_Matrix)
+        K_matrix = K_matrix * Identify_Matrix
+        X1 = torch.mm(K_matrix.t(), X2)
+        s = torch.sum(K_matrix, dim = 1)
+        s = torch.unsqueeze(s, dim = 1)
+        # print(s)
+        X1 = X1 / s
+        
         D = torch.sum(torch.square(X - X1), dim = 0)
         w = torch.exp(-D / _lambda)
         w = w / torch.sum(w)
         X2 = X1.clone()
     # print('Turn One : ', X2)
+    # eturn X2, w
     X1 = X.clone()
     X2 = X.clone()
     # print(id(X1))
     # print(id(X2))
     # print(X2)
     # exit()
+    print(w)
     for t in range(tmax):
-        for i in range(n):
-            for j in range(i, n):
-                K_matrix[i, j] = K(X2[i, :], X2[j, :], w, h)
+        # for i in range(n):
+        #     for j in range(i, n):
+        #         K_matrix[i, j] = K(X2[i, :], X2[j, :], w, h)
+
+        # for i in range(n):
+        #     for j in range(i, n):
+        #         K_matrix[j, i] = K_matrix[i, j]
+
+        # print(K_matrix)
+        w_coeff = torch.sqrt(w)
         
-        for i in range(n):
-            for j in range(i, n):
-                K_matrix[j, i] = K_matrix[i, j]
+        # w_coeff = torch.unsqueeze(w_coeff, dim = 1)
+        # print(w_coeff)
+        # print(w_coeff.shape)
+        # print(X2.shape)
+        X2_sqrt_w_coeff = X2 * w_coeff
+        dist_Matrix = distance.cdist(X2_sqrt_w_coeff, X2_sqrt_w_coeff, 'euclidean')
+        dist_Matrix = torch.from_numpy(dist_Matrix)
+        # print(dist_Matrix.shape)
+        # print(dist_Matrix)
+        # print(dist_Matrix * dist_Matrix)
+        
+        dist_Matrix = dist_Matrix * dist_Matrix / h
+        # dist_Matrix = dist_Matrix * dist_Matrix * 1 / p / h        
+        dist_Matrix = torch.exp(-dist_Matrix)
+        K_matrix = dist_Matrix.clone()
         # print(K_matrix)
         # exit()
-        for i in range(n):
-            I = list(range(0, n))
-            del I[i]
-            s = torch.sum(K_matrix[I, i])
-            for l in range(p):
-                # print(X2[I, l].shape)
-                # print(K_matrix[I, i].shape)
-                # print((X2[I, l] * K_matrix[I, i]).shape)
-                # exit()
-                X1[i, l] = torch.sum(X2[I, l] * K_matrix[I, i])
-            X1[i, :] = X1[i, :] / s
+        # for i in range(n):
+        #     I = list(range(0, n))
+        #     del I[i]
+        #     s = torch.sum(K_matrix[I, i])
+        #     for l in range(p):
+        #         # print(X2[I, l].shape)
+        #         # print(K_matrix[I, i].shape)
+        #         # print((X2[I, l] * K_matrix[I, i]).shape)
+        #         # exit()
+        #         X1[i, l] = torch.sum(X2[I, l] * K_matrix[I, i])
+        #     X1[i, :] = X1[i, :] / s
+        #     res_1 = X1[i, :]
+            # print(X1[i, :])
+
+            # I = list(range(0, n))
+            # K_matrix[i][i] = 0
+            # s = torch.sum(K_matrix[I, i])
+            # for l in range(p):
+            #     # print(X2[I, l].shape)
+            #     # print(K_matrix[I, i].shape)
+            #     # print((X2[I, l] * K_matrix[I, i]).shape)
+            #     # exit()
+            #     X1[i, l] = torch.sum(X2[I, l] * K_matrix[I, i])
+            # X1[i, :] = X1[i, :] / s
+            # res_2 = X1[i, :]
+            # # print(X1[i, :])
+            # # print(res_1 == res_2)
+            # print(torch.sum(res_1 == res_2))
+        Identify_Matrix = 1 - torch.eye(K_matrix.shape[0])
+        # print(K_matrix * Identify_Matrix)
+        K_matrix = K_matrix * Identify_Matrix
+        X1 = torch.mm(K_matrix.t(), X2)
+        s = torch.sum(K_matrix, dim = 1)
+        s = torch.unsqueeze(s, dim = 1)
+        # print(s)
+        X1 = X1 / s
+        # print(X1)
+            # print(X1[i, :] / s)
+            # print(torch.sum(res_1 == res_3))
+            # print(res_1)
+            # print(res_3)
+            # print(res_1 == res_3)
 
         D = torch.sum(torch.square(X - X1), dim = 0)
         w = torch.exp(-D / _lambda)
         w = w / torch.sum(w)
         X2 = X1.clone()
+        # print('done')
+        # exit()
     # print(X2)
     # print(id(X1))
     # print(id(X2))
